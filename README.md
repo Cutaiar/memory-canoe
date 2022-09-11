@@ -1,5 +1,7 @@
 # memory-canoe
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/e30c81fb-1182-4304-bcdb-bab90d9019af/deploy-status)](https://app.netlify.com/sites/memory-canoe/deploys)
+
 Goal is to connect all the data and put it on a zoomable timeline.
 
 _This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app)._
