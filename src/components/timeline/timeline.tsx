@@ -3,8 +3,10 @@ import React from "react";
 import { useScrollable } from "./scrollable";
 import { useZoomable } from "./zoomable";
 
+const weeks = new Array(52).fill(undefined);
+
 /**
- * The zoomable, draggable timeline
+ * The zoomable, draggable timeline. Shows 1 year
  */
 export const Timeline = () => {
   const zRef = React.useRef<HTMLDivElement | null>(null);
@@ -27,39 +29,57 @@ export const Timeline = () => {
           }}
           ref={zRef}
         >
-          <Spacer />
-          {new Array(50).fill(undefined).map((_) => (
+          {weeks.map((_) => (
             <>
               <Tick />
-              <Spacer />
+              <Week />
             </>
           ))}
-          <Spacer />
         </div>
       </div>
     </div>
   );
 };
 
-const Spacer = () => {
+const Week = () => {
   return (
     <div
       style={{
         flexGrow: 1,
         height: "2px",
         background: "black",
+        display: "flex",
+        alignItems: "center",
       }}
-    />
+    >
+      {/* 7 days in a week */}
+      {[0, 0, 0, 0, 0, 0].map((_) => (
+        <>
+          <div
+            style={{
+              flexGrow: 1,
+            }}
+          />
+          <Tick height={5} opacity={20} />
+        </>
+      ))}
+      <div
+        style={{
+          flexGrow: 1,
+        }}
+      />
+    </div>
   );
 };
 
-const Tick = () => {
+const Tick = (props: { height?: number; opacity?: number }) => {
   return (
     <div
       style={{
-        height: "10px",
+        height: props.height ?? "10px",
         width: "2px",
         background: "black",
+        opacity: `${props.opacity}%` ?? "100%",
       }}
     ></div>
   );
