@@ -4,8 +4,12 @@ import React from "react";
  * Attach events to `scrollableElement` so that its scrollLeft is adjusted according to grab and drag.
  * Adapted from: https://thomas.preissler.me/blog/2022/01/10/implementing-a-timeline-with-scrolling-and-zooming-or-how-i-failed-at-elementary-school-math
  */
-export const useScrollable = (scrollableElement: HTMLDivElement | null) => {
+export const useScrollable = (
+  scrollableElementRef: React.MutableRefObject<HTMLElement | null>
+) => {
   return React.useEffect(() => {
+    const scrollableElement = scrollableElementRef.current;
+
     if (!scrollableElement) {
       return;
     }
@@ -44,5 +48,5 @@ export const useScrollable = (scrollableElement: HTMLDivElement | null) => {
       scrollableElement.removeEventListener("mouseup", handleMouseUp);
       scrollableElement.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [scrollableElement]);
+  }, [scrollableElementRef]);
 };

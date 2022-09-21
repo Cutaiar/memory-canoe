@@ -5,10 +5,13 @@ import React from "react";
  * Adapted from: https://thomas.preissler.me/blog/2022/01/10/implementing-a-timeline-with-scrolling-and-zooming-or-how-i-failed-at-elementary-school-math
  */
 export const useZoomable = (
-  zoomableElement: HTMLDivElement | null,
-  containerElement: HTMLDivElement | null
+  zoomableElementRef: React.MutableRefObject<HTMLElement | null>,
+  containerElementRef: React.MutableRefObject<HTMLElement | null>
 ) => {
   return React.useEffect(() => {
+    const zoomableElement = zoomableElementRef.current;
+    const containerElement = containerElementRef.current;
+
     if (!zoomableElement || !containerElement) {
       return;
     }
@@ -94,5 +97,5 @@ export const useZoomable = (
       zoomableElement.removeEventListener("mousemove", handleMouseMove);
       zoomableElement.removeEventListener("wheel", handleWheel);
     };
-  }, [containerElement, zoomableElement]);
+  }, [containerElementRef, zoomableElementRef]);
 };

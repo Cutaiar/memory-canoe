@@ -1,7 +1,7 @@
 import React from "react";
 
-import { useScrollable } from "./scrollable";
-import { useZoomable } from "./zoomable";
+import { useScrollable } from "./useScrollable";
+import { useZoomable } from "./useZoomable";
 
 const weeks = new Array(52).fill(undefined);
 
@@ -9,16 +9,16 @@ const weeks = new Array(52).fill(undefined);
  * The zoomable, draggable timeline. Shows 1 year
  */
 export const Timeline = () => {
-  const zRef = React.useRef<HTMLDivElement | null>(null);
-  const sRef = React.useRef<HTMLDivElement | null>(null);
-  useScrollable(sRef.current);
-  useZoomable(zRef.current, sRef.current);
+  const zoomableRef = React.useRef<HTMLDivElement | null>(null);
+  const scrollableRef = React.useRef<HTMLDivElement | null>(null);
+  useScrollable(scrollableRef);
+  useZoomable(zoomableRef, scrollableRef);
 
   return (
     <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
       <div
         style={{ overflowX: "hidden", cursor: "grab", width: "100%" }}
-        ref={sRef}
+        ref={scrollableRef}
       >
         <div
           style={{
@@ -27,7 +27,7 @@ export const Timeline = () => {
             display: "flex",
             alignItems: "center",
           }}
-          ref={zRef}
+          ref={zoomableRef}
         >
           {weeks.map((_) => (
             <>
