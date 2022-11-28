@@ -3,7 +3,8 @@ import React from "react";
 import { useScrollable } from "./useScrollable";
 import { useZoomable } from "./useZoomable";
 
-import { Tooltip, Text } from "@fluentui/react-components";
+import { Tooltip, Text, Button, makeStyles } from "@fluentui/react-components";
+import { AddCircle32Filled } from "@fluentui/react-icons";
 
 import { activities } from "../../data/strava-activities-dummy";
 
@@ -71,6 +72,7 @@ export const Timeline = () => {
           }}
           ref={zoomableRef}
         >
+          <AddTimeline />
           <StravaTimeline events={stravaEvents} allDays={days} />
           {/* Regular timeline */}
           <div
@@ -185,7 +187,7 @@ const StravaTimeline = (props: { allDays: Date[]; events: StravaEvent[] }) => {
           Strava
         </Text>
       </div>
-      )
+
       {props.allDays.map((day, i) => {
         const event: StravaEvent | undefined = props.events.find(
           (e) => day.toDateString() === e.date.toDateString()
@@ -208,6 +210,37 @@ const StravaTimeline = (props: { allDays: Date[]; events: StravaEvent[] }) => {
           </>
         );
       })}
+    </div>
+  );
+};
+
+const AddTimeline = () => {
+  return (
+    <div
+      style={{
+        height: "50px",
+        width: "100%",
+        background: "transparent",
+        display: "flex",
+        alignItems: "center",
+        padding: "10px",
+        boxSizing: "border-box",
+      }}
+    >
+      <div style={{ position: "absolute" }}>
+        <Tooltip
+          relationship="label"
+          content="Add a timeline"
+          positioning={"after"}
+        >
+          <Button
+            onClick={() => console.log("add a new timeline clicked")}
+            appearance="subtle"
+            icon={<AddCircle32Filled />}
+            size="large"
+          ></Button>
+        </Tooltip>
+      </div>
     </div>
   );
 };
