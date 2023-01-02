@@ -9,6 +9,7 @@ export interface EventBase {
   date: Date;
 }
 
+// TODO move when there is a good place for this like a type util
 type ArrayElement<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 
@@ -25,10 +26,10 @@ export interface StravaEvent extends EventBase {
 }
 
 /**
- * Fetch strava events on mount, initally returns an empty array which is filled when events are fetched.
+ * Fetch strava events on mount, initially returns undefined which is replaced with event array when events are fetched.
  */
-export const useStravaActivities: () => StravaEvent[] = () => {
-  const [stravaEvents, setStravaEvents] = React.useState<StravaEvent[]>([]);
+export const useStravaActivities: () => StravaEvent[] | undefined = () => {
+  const [stravaEvents, setStravaEvents] = React.useState<StravaEvent[]>();
 
   React.useEffect(() => {
     // Simplify dummy activities into an array of simple objects sorted in ascending order by date

@@ -3,7 +3,9 @@ import React from "react";
 import { useScrollable } from "./useScrollable";
 import { useZoomable } from "./useZoomable";
 
-import { Tooltip, Text, Button, makeStyles } from "@fluentui/react-components";
+import { Tooltip, Text, Button } from "@fluentui/react-components";
+import { ProgressBar } from "@fluentui/react-components/unstable";
+
 import { AddCircle32Filled } from "@fluentui/react-icons";
 
 import { addDays, daysBetween, map } from "../../util";
@@ -19,14 +21,17 @@ export const Timeline = () => {
   useScrollable(scrollableRef);
   useZoomable(zoomableRef, scrollableRef);
 
-  const [days, setDays] = React.useState<Date[]>([]);
+  const [days, setDays] = React.useState<Date[]>();
 
   const stravaEvents = useStravaActivities();
 
   // Set up an array of days to drive the timeline
   React.useEffect(() => {
     // Calculate how many days we need total on the timeline
+    // bail if there are no events
+    if (!stravaEvents) return;
     const firstDate = stravaEvents[0]?.date;
+    // bail if there were 0 events in the event array
     if (!firstDate) return;
 
     const numberOfDays = daysBetween(
@@ -58,33 +63,63 @@ export const Timeline = () => {
           ref={zoomableRef}
         >
           <AddTimeline />
-          <StravaTimeline events={stravaEvents} allDays={days} />
-          {/* Regular timeline */}
-          <div
-            style={{
-              height: "50px",
-              width: "100%",
-              background: "transparent",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {days.map((day, i) => {
-              const isMonday = i % 7 === 0;
-              return (
-                <>
-                  <Tick
-                    opacity={isMonday ? 100 : 50}
-                    height={isMonday ? 10 : 5}
-                    name={day.toDateString()}
-                  />
-                  <Space opacity={50} />
-                </>
-              );
-            })}
-          </div>
+          {days && stravaEvents ? (
+            <StravaTimeline events={stravaEvents} allDays={days} />
+          ) : (
+            <TimelineLoader />
+          )}
+          {days ? <TimelineBase days={days} /> : <TimelineLoader />}
         </div>
       </div>
+    </div>
+  );
+};
+
+// Many components below assume the height of a timeline is 50px
+
+const TimelineLoader = () => {
+  return (
+    <div
+      style={{
+        width: "100%",
+        background: "transparent",
+        height: "50px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "10px",
+        boxSizing: "border-box",
+      }}
+    >
+      <ProgressBar thickness="large" />
+    </div>
+  );
+};
+
+const TimelineBase = (props: { days: Date[] }) => {
+  return (
+    <div
+      style={{
+        height: "50px",
+        width: "100%",
+        background: "transparent",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      {props.days.map((day, i) => {
+        const isMonday = i % 7 === 0;
+        return (
+          <>
+            <Tick
+              opacity={isMonday ? 100 : 50}
+              height={isMonday ? 10 : 5}
+              name={day.toDateString()}
+            />
+            <Space opacity={50} />
+          </>
+        );
+      })}
     </div>
   );
 };
@@ -99,35 +134,6 @@ const Space = (props: { opacity: number }) => (
     }}
   />
 );
-
-const Tick = (props: {
-  height?: number;
-  opacity?: number;
-  color?: string;
-  name?: string;
-  onClick?: () => void;
-}) => {
-  const r = React.useRef<HTMLDivElement | null>(null);
-
-  return (
-    <Tooltip content={props.name ?? "unnamed event"} relationship={"label"}>
-      <div
-        ref={r}
-        onClick={props.onClick}
-        style={{
-          height: props.height ?? "10px",
-          maxWidth: "100px",
-          minWidth: "1px",
-          flexGrow: 1,
-          background: props.color ?? "black",
-          opacity: `${props.opacity}%` ?? "100%",
-          cursor: "pointer",
-          borderRadius: "1vmin",
-        }}
-      ></div>
-    </Tooltip>
-  );
-};
 
 const StravaTimeline = (props: { allDays: Date[]; events: StravaEvent[] }) => {
   const [hoverRef, isHovered] = useHover();
@@ -218,5 +224,34 @@ const AddTimeline = () => {
         </Tooltip>
       </div>
     </div>
+  );
+};
+
+const Tick = (props: {
+  height?: number;
+  opacity?: number;
+  color?: string;
+  name?: string;
+  onClick?: () => void;
+}) => {
+  const r = React.useRef<HTMLDivElement | null>(null);
+
+  return (
+    <Tooltip content={props.name ?? "unnamed event"} relationship={"label"}>
+      <div
+        ref={r}
+        onClick={props.onClick}
+        style={{
+          height: props.height ?? "10px",
+          maxWidth: "100px",
+          minWidth: "1px",
+          flexGrow: 1,
+          background: props.color ?? "black",
+          opacity: `${props.opacity}%` ?? "100%",
+          cursor: "pointer",
+          borderRadius: "1vmin",
+        }}
+      ></div>
+    </Tooltip>
   );
 };
