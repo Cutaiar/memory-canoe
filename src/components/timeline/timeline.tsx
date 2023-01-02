@@ -6,10 +6,9 @@ import { useZoomable } from "./useZoomable";
 import { Tooltip, Text, Button, makeStyles } from "@fluentui/react-components";
 import { AddCircle32Filled } from "@fluentui/react-icons";
 
-import { activities } from "../../data/strava-activities-dummy";
-
 import { addDays, daysBetween, map } from "../../util";
 import { useHover } from "../../hooks";
+import { StravaEvent, useStravaActivities } from "../../hooks";
 
 /**
  * The zoomable, draggable timeline. Shows 1 year
@@ -21,40 +20,26 @@ export const Timeline = () => {
   useZoomable(zoomableRef, scrollableRef);
 
   const [days, setDays] = React.useState<Date[]>([]);
-  const [stravaEvents, setStravaEvents] = React.useState<StravaEvent[]>([]);
 
-  // Using the sample activities, make a day array that will accommodate all the activities
+  const stravaEvents = useStravaActivities();
+
+  // Set up an array of days to drive the timeline
   React.useEffect(() => {
-    // Simplify dummy activities into an array of simple objects sorted in ascending order by date
-    const simpleActivities: StravaEvent[] = activities
-      .map((activity) => {
-        return {
-          date: new Date(activity.start_date),
-          name: activity.name,
-          length: activity.distance,
-          link: `https://strava.com/activities/${activity.id}`,
-        };
-      })
-      .sort((a, b) => b.date.getTime() - a.date.getTime())
-      .reverse();
-
-    // console.log(simpleActivities);
-    setStravaEvents(simpleActivities);
-
     // Calculate how many days we need total on the timeline
-    const firstDate = simpleActivities[0].date;
+    const firstDate = stravaEvents[0]?.date;
+    if (!firstDate) return;
+
     const numberOfDays = daysBetween(
       firstDate,
-      simpleActivities[simpleActivities.length - 1].date
+      stravaEvents[stravaEvents.length - 1].date
     );
 
-    // Set up an array of days to drive the timeline
     setDays(
       new Array(numberOfDays)
         .fill(undefined)
         .map((_, i) => addDays(firstDate, i))
     );
-  }, []);
+  }, [stravaEvents]);
 
   return (
     <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
@@ -143,15 +128,6 @@ const Tick = (props: {
     </Tooltip>
   );
 };
-
-interface Event {
-  date: Date;
-}
-interface StravaEvent extends Event {
-  name: string;
-  length: number;
-  link: string;
-}
 
 const StravaTimeline = (props: { allDays: Date[]; events: StravaEvent[] }) => {
   const [hoverRef, isHovered] = useHover();
