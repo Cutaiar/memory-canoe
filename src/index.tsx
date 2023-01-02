@@ -3,11 +3,16 @@ import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 import { App } from "./components";
+import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <FluentProvider theme={teamsLightTheme}>
+      <App />
+    </FluentProvider>
+    ,
   </React.StrictMode>,
+
   document.getElementById("root")
 );
 
