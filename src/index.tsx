@@ -5,6 +5,7 @@ import "./index.css";
 import { App, ErrorFallback } from "./components";
 import { ErrorBoundary } from "react-error-boundary";
 import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
+import { AuthProvider } from "./components/strava-auth/authContext";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -13,7 +14,9 @@ ReactDOM.render(
       onReset={() => window.location.reload()}
     >
       <FluentProvider theme={teamsLightTheme}>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </FluentProvider>
     </ErrorBoundary>
     ,

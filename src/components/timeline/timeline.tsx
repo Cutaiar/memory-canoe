@@ -11,6 +11,12 @@ import { AddCircle32Filled } from "@fluentui/react-icons";
 import { addDays, daysBetween, map } from "../../util";
 import { useHover } from "../../hooks";
 import { StravaEvent, useStravaActivities } from "../../hooks";
+import { StravaConnectButton } from "../strava-auth/StravaConnectButton";
+import { useStravaAuth } from "../strava-auth/useStravaAuth";
+import { useAuth } from "../strava-auth/authContext";
+
+import { AthleteResponse } from "strava-v3";
+const StravaAPI = require("strava-v3");
 
 /**
  * The zoomable, draggable timeline. Shows 1 year
@@ -46,6 +52,41 @@ export const Timeline = () => {
     );
   }, [stravaEvents]);
 
+  useStravaAuth();
+
+  const [athlete, setAthlete] = React.useState<AthleteResponse>();
+  const [error, setError] = React.useState(false);
+  const [authState, setTokens] = useAuth();
+
+  const strava = React.useMemo(() => {
+    if (authState.tokens.strava) {
+      const config = {
+        access_token: authState.tokens.strava,
+        client_id: process.env.REACT_APP_STRAVA_CLIENT_ID,
+        client_secret: process.env.REACT_APP_STRAVA_CLIENT_SECRET,
+        redirect_uri: "http://localhost:3000/redirect",
+      };
+      const strava = new StravaAPI.client(config.access_token);
+      return strava;
+    }
+  }, [authState.tokens.strava]);
+
+  React.useEffect(() => {
+    if (strava) {
+      const fetchAthelete = async () => {
+        try {
+          const payload = await strava.athlete.get({});
+          setAthlete(payload);
+          setError(false);
+        } catch (error) {
+          console.log(error);
+          setError(true);
+        }
+      };
+      fetchAthelete();
+    }
+  }, [strava]);
+
   return (
     <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
       <div
@@ -62,7 +103,9 @@ export const Timeline = () => {
           }}
           ref={zoomableRef}
         >
+          <div>{error}</div>
           <AddTimeline />
+          <StravaConnectButton />
           {days && stravaEvents ? (
             <StravaTimeline events={stravaEvents} allDays={days} />
           ) : (

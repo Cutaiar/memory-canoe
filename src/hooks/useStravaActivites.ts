@@ -35,7 +35,6 @@ export const useStravaActivities: () => StravaEvent[] | undefined = () => {
     // Simplify dummy activities into an array of simple objects sorted in ascending order by date
     // TODO: note what order these are in
     const fetchData = async () => {
-      console.log("fetching");
       await sleep(1000);
       const simpleActivities: StravaEvent[] = activities
         .map((activity) => {
@@ -50,7 +49,7 @@ export const useStravaActivities: () => StravaEvent[] | undefined = () => {
         .sort((a, b) => b.date.getTime() - a.date.getTime())
         .reverse();
 
-      console.log(simpleActivities);
+      // console.log(simpleActivities);
       setStravaEvents(simpleActivities);
     };
     fetchData();
