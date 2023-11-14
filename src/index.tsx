@@ -2,12 +2,26 @@ import React from "react";
 import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
-import { App } from "./components";
+import { App, ErrorFallback } from "./components";
+import { ErrorBoundary } from "react-error-boundary";
+import { FluentProvider, teamsLightTheme } from "@fluentui/react-components";
+import { AuthProvider } from "./components/strava-auth/authContext";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => window.location.reload()}
+    >
+      <FluentProvider theme={teamsLightTheme}>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </FluentProvider>
+    </ErrorBoundary>
+    ,
   </React.StrictMode>,
+
   document.getElementById("root")
 );
 
